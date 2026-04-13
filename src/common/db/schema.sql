@@ -12,6 +12,7 @@ CREATE TABLE USERS (
     name varchar(50),
     email VARCHAR(322) UNIQUE NOT NULL,
     password VARCHAR(66) NOT NULL,
+    isVerified BOOLEAN DEFAULT FALSE,
 
     verificationToken VARCHAR(66),
     refreshToken TEXT,

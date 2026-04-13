@@ -1,10 +1,10 @@
-import crypto from 'crypto';
-import jwt from 'jsonwebtoken';
-import 'dotenv/config';
+import crypto from "crypto";
+import jwt from "jsonwebtoken";
+import "dotenv/config";
 
 const generateAccessToken = (payload) => {
   return jwt.sign(payload, process.env.JWT_ACCESS_SECRET, {
-    expiresIn: process.env.JWT_ACCESS_EXPIRES_IN || '15m',
+    expiresIn: process.env.JWT_ACCESS_EXPIRES_IN || "15m",
   });
 };
 
@@ -14,7 +14,7 @@ const verifyAccessToken = (token) => {
 
 const generateRefreshToken = (payload) => {
   return jwt.sign(payload, process.env.JWT_REFRESH_SECRET, {
-    expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '7d',
+    expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || "7d",
   });
 };
 
@@ -23,11 +23,11 @@ const verifyRefreshToken = (token) => {
 };
 
 const generateResetToken = () => {
-  const rawToken = crypto.randomBytes(32).toString('hex');
+  const rawToken = crypto.randomBytes(32).toString("hex");
   const hashedToken = crypto
-    .createHash('sha256')
+    .createHash("sha256")
     .update(rawToken)
-    .digest('hex');
+    .digest("hex");
 
   return { rawToken, hashedToken };
 };

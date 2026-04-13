@@ -11,10 +11,9 @@ import pg from "pg";
 import { dirname } from "path";
 import { fileURLToPath } from "url";
 import cors from "cors";
-import authRouter from "./src/modules/auth/routes.js"
+import authRouter from "./src/modules/auth/routes.js";
 import { authenticate } from "./src/modules/auth/middleware.js";
 import cookieParser from "cookie-parser";
-
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -49,13 +48,13 @@ app.use(cors());
 app.set("view engine", "ejs");
 app.set("views", "./src/views");
 
-app.use(express.json()); 
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 app.use("/api/auth", authRouter);
 
-app.get("/" ,authenticate, (req, res) => {
+app.get("/", authenticate, (req, res) => {
   res.sendFile(__dirname + "/index.html");
 });
 //get all seats
@@ -66,7 +65,7 @@ app.get("/seats", authenticate, async (req, res) => {
 
 //book a seat give the seatId and your name
 
-app.put("/:id/:name",authenticate, async (req, res) => {
+app.put("/:id/:name", authenticate, async (req, res) => {
   try {
     const id = req.params.id;
     const name = req.params.name;

@@ -1,5 +1,5 @@
-import Joi from 'joi';
-import BaseDto from '../../../common/dto/base.dto.js';
+import Joi from "joi";
+import BaseDto from "../../../common/dto/base.dto.js";
 
 class ResetPasswordDto extends BaseDto {
   static schema = Joi.object({
@@ -8,10 +8,10 @@ class ResetPasswordDto extends BaseDto {
       .pattern(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/)
       .required()
       .messages({
-        'string.min': 'Password must be at least 8 characters',
-        'string.pattern.base':
-          'Password must contain uppercase, lowercase, and a number',
-        'any.required': 'Password is required',
+        "string.min": "Password must be at least 8 characters",
+        "string.pattern.base":
+          "Password must contain uppercase, lowercase, and a number",
+        "any.required": "Password is required",
       }),
   });
 }

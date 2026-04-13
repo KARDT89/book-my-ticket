@@ -1,4 +1,4 @@
-import nodemailer from 'nodemailer';
+import nodemailer from "nodemailer";
 
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
@@ -11,8 +11,8 @@ const transporter = nodemailer.createTransport({
 });
 
 transporter.verify((error, success) => {
-  if (error) console.error('SMTP connection failed:', error);
-  else console.log('SMTP server ready');
+  if (error) console.error("SMTP connection failed:", error);
+  else console.log("SMTP server ready");
 });
 
 const sendMail = async ({ to, subject, html }) => {
@@ -29,7 +29,7 @@ const sendVerificationEmail = async (email, token) => {
   await transporter.sendMail({
     from: `${process.env.SMTP_FROM_EMAIL} <${process.env.SMTP_FROM_EMAIL}>`,
     to: email,
-    subject: 'Verify your email',
+    subject: "Verify your email",
     html: `
       <div style="font-family: Arial, sans-serif; background-color: #ffffff; color: #000000; padding: 20px; text-align: center;">
   
@@ -64,7 +64,7 @@ const sendResetPasswordEmail = async (email, token) => {
 
   await sendMail({
     to: email,
-    subject: 'Reset your password',
+    subject: "Reset your password",
     html: `
       <div style="font-family: Arial, sans-serif; background-color: #ffffff; color: #000000; padding: 20px; text-align: center;">
 
