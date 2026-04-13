@@ -31,4 +31,39 @@ const logout = async (req, res) => {
     ApiResponse.ok(res, "Successfully logged out", user);
 };
 
-export { register, login, logout };
+const verifyEmail = async (req, res) => {
+  const user = await authService.verifyEmail(req.params.token);
+  ApiResponse.ok(res, 'Email verified successfully', user);
+};
+
+const forgotPassword = async (req, res) => {
+  const user = await authService.forgotPassword(req.body.email);
+  ApiResponse.ok(res, 'Reset email sent', user);
+};
+
+const resetPassword = async (req, res) => {
+  const user = await authService.resetPassword(
+    req.params.token,
+    req.body.password
+  );
+  ApiResponse.ok(res, 'Password reset successful', user);
+};
+
+export const refresh = async (req, res, next) => {
+  try {
+    // token can come from cookies OR body (your choice)
+    const token =
+      req.cookies?.refreshToken || req.body.refreshToken;
+
+    const data = await authService.refresh(token);
+
+    return res.status(200).json({
+      success: true,
+      ...data,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export { register, login, logout, verifyEmail, forgotPassword, resetPassword, refresh };

@@ -44,10 +44,7 @@ const pool = new pg.Pool({
 // });
 
 const app = new express();
-app.use(cors({
-  origin: "http://localhost:8080",
-  credentials: true
-}));
+app.use(cors());
 
 app.set("view engine", "ejs");
 app.set("views", "./src/views");
@@ -56,7 +53,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-app.use("/", authRouter);
+app.use("/api/auth", authRouter);
 
 app.get("/" ,authenticate, (req, res) => {
   res.sendFile(__dirname + "/index.html");

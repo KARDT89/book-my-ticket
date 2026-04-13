@@ -4,11 +4,14 @@ import {
     generateResetToken,
     generateAccessToken,
     generateRefreshToken,
+    verifyRefreshToken,
 } from "../../common/utils/jwt.utils.js";
 import {
     comparePassword,
     hashPassword,
+    hashToken
 } from "../../common/utils/password.utils.js";
+import { sendVerificationEmail, sendResetPasswordEmail } from "../../common/config/email.js";
 
 const register = async ({ name, email, password }) => {
     // 1. check existing user
@@ -36,7 +39,14 @@ const register = async ({ name, email, password }) => {
 
     const user = result.rows[0];
 
-    // 5. return safe data + raw token (email verification can be implimented further)
+    // 5. send an email to user with token: rawToken
+    try {
+        await sendVerificationEmail(email, rawToken);
+    } catch (err) {
+        console.error('Error sending verification email', err);
+    }
+
+    // 6. return safe data + raw token (email verification can be implimented further)
     return {
         user,
         verificationToken: rawToken,
@@ -110,4 +120,130 @@ const logout = async (userId) => {
     };
 };
 
-export { register, login, logout };
+const forgotPassword = async (email) => {
+  // 1. Find user
+  const result = await db.query(
+    "SELECT * FROM users WHERE email = $1",
+    [email]
+  );
+
+  if (result.rows.length === 0) {
+    throw ApiError.notFound("User not found");
+  }
+
+  const user = result.rows[0];
+
+  // 2. Generate token
+  const { rawToken, hashedToken } = generateResetToken();
+
+  const expires = new Date(Date.now() + 15 * 60 * 1000); // 15 min
+
+  // 3. Update user
+  await db.query(
+    `UPDATE users 
+     SET "resetPasswordToken" = $1,
+         "resetPasswordExpires" = $2,
+         "updatedAt" = CURRENT_TIMESTAMP
+     WHERE id = $3`,
+    [hashedToken, expires, user.id]
+  );
+
+  // 4. Send email
+  await sendResetPasswordEmail(email, rawToken);
+};
+
+const resetPassword = async (token, newPassword) => {
+  const hashedToken = hashToken(token);
+
+  // 1. Find user with valid (non-expired) token
+  const result = await db.query(
+    `SELECT * FROM users 
+     WHERE "resetPasswordToken" = $1
+     AND "resetPasswordExpires" > NOW()`,
+    [hashedToken]
+  );
+
+  if (result.rows.length === 0) {
+    throw ApiError.badRequest("Invalid or expired token");
+  }
+
+  const user = result.rows[0];
+
+  // 2. Hash password manually (IMPORTANT: no pre-save hook here)
+  const hashedPassword = await hashPassword(newPassword);
+
+  // 3. Update password + clear reset fields
+  await db.query(
+    `UPDATE users
+     SET password = $1,
+         "resetPasswordToken" = NULL,
+         "resetPasswordExpires" = NULL,
+         "updatedAt" = CURRENT_TIMESTAMP
+     WHERE id = $2`,
+    [hashedPassword, user.id]
+  );
+};
+
+const verifyEmail = async (token) => {
+  const hashedToken = hashToken(token);
+
+  // 1. Find user
+  const result = await db.query(
+    `SELECT * FROM users 
+     WHERE "verificationToken" = $1`,
+    [hashedToken]
+  );
+
+  if (result.rows.length === 0) {
+    throw ApiError.badRequest("Invalid token");
+  }
+
+  const user = result.rows[0];
+
+  // 2. Update user
+  await db.query(
+    `UPDATE users
+     SET "isVerified" = true,
+         "verificationToken" = NULL,
+         "updatedAt" = CURRENT_TIMESTAMP
+     WHERE id = $1`,
+    [user.id]
+  );
+
+  return user;
+};
+
+const refresh = async (token) => {
+  if (!token) {
+    throw ApiError.unauthorized("Refresh token missing");
+  }
+
+  // 1. Verify JWT
+  const decoded = verifyRefreshToken(token);
+
+  // 2. Fetch user
+  const result = await db.query(
+    `SELECT * FROM users WHERE id = $1`,
+    [decoded.id]
+  );
+
+  if (result.rows.length === 0) {
+    throw ApiError.unauthorized("User not found");
+  }
+
+  const user = result.rows[0];
+
+  // 3. Compare hashed refresh token
+  const hashedToken = hashToken(token);
+
+  if (user.refreshToken !== hashedToken) {
+    throw ApiError.unauthorized("Invalid refresh token");
+  }
+
+  // 4. Generate new access token
+  const accessToken = generateAccessToken({ id: user.id });
+
+  return { accessToken };
+};
+
+export { register, login, logout, forgotPassword, resetPassword, verifyEmail, refresh };
