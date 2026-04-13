@@ -12,6 +12,8 @@ import { dirname } from "path";
 import { fileURLToPath } from "url";
 import cors from "cors";
 import authRouter from "./src/modules/auth/routes.js"
+import { authenticate } from "./src/modules/auth/middleware.js";
+import cookieParser from "cookie-parser";
 
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -42,25 +44,32 @@ const pool = new pg.Pool({
 // });
 
 const app = new express();
-app.use(cors());
+app.use(cors({
+  origin: "http://localhost:8080",
+  credentials: true
+}));
+
+app.set("view engine", "ejs");
+app.set("views", "./src/views");
 
 app.use(express.json()); 
-
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 app.use("/", authRouter);
 
-app.get("/", (req, res) => {
+app.get("/" ,authenticate, (req, res) => {
   res.sendFile(__dirname + "/index.html");
 });
 //get all seats
-app.get("/seats", async (req, res) => {
+app.get("/seats", authenticate, async (req, res) => {
   const result = await pool.query("select * from seats"); // equivalent to Seats.find() in mongoose
   res.send(result.rows);
 });
 
 //book a seat give the seatId and your name
 
-app.put("/:id/:name", async (req, res) => {
+app.put("/:id/:name",authenticate, async (req, res) => {
   try {
     const id = req.params.id;
     const name = req.params.name;
