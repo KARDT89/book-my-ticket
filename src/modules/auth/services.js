@@ -34,9 +34,9 @@ const register = async ({ name, email, password }) => {
 
   // 4. insert user + RETURNING
   const result = await db.query(
-    `INSERT INTO users(name, email, password, verificationToken)
+    `INSERT INTO users(name, email, password, verificationtoken)
          VALUES($1, $2, $3, $4)
-         RETURNING id, name, email, createdAt`,
+         RETURNING id, name, email, createdat`,
     [name, email, hashedPassword, hashedToken]
   );
 
@@ -65,7 +65,10 @@ const login = async ({ email, password }) => {
     throw ApiError.unauthorized("Invalid Email/Password");
 
   const user = result.rows[0];
+  // console.log(user);
   console.log(user);
+  
+  if(!user.isverified) throw ApiError.forbidden("Email not verified")
 
   // 2. check password
   const isMatch = await comparePassword(password, user.password);
@@ -78,7 +81,7 @@ const login = async ({ email, password }) => {
   const refreshToken = generateRefreshToken({ id: user.id });
 
   // 4. store refresh token in DB
-  await db.query("UPDATE users SET refreshToken = $1 WHERE id = $2", [
+  await db.query("UPDATE users SET refreshtoken = $1 WHERE id = $2", [
     hashToken(refreshToken),
     user.id,
   ]);
@@ -97,7 +100,7 @@ const login = async ({ email, password }) => {
 const logout = async (userId) => {
   const result = await db.query(
     `UPDATE users 
-         SET refreshToken = NULL 
+         SET refreshtoken = NULL 
          WHERE id = $1 
          RETURNING id, name, email`,
     [userId]
@@ -142,9 +145,9 @@ const forgotPassword = async (email) => {
   // 3. Update user
   await db.query(
     `UPDATE users 
-     SET "resetPasswordToken" = $1,
-         "resetPasswordExpires" = $2,
-         "updatedAt" = CURRENT_TIMESTAMP
+     SET "resetpasswordtoken" = $1,
+         "resetpasswordexpires" = $2,
+         "updatedat" = CURRENT_TIMESTAMP
      WHERE id = $3`,
     [hashedToken, expires, user.id]
   );
@@ -154,13 +157,13 @@ const forgotPassword = async (email) => {
 };
 
 const resetPassword = async (token, newPassword) => {
-  const hashedToken = hashToken(token);
+  const hashedToken = await hashToken(token);
 
   // 1. Find user with valid (non-expired) token
   const result = await db.query(
     `SELECT * FROM users 
-     WHERE "resetPasswordToken" = $1
-     AND "resetPasswordExpires" > NOW()`,
+     WHERE "resetpasswordtoken" = $1
+     AND "resetpasswordexpires" > NOW()`,
     [hashedToken]
   );
 
@@ -177,21 +180,21 @@ const resetPassword = async (token, newPassword) => {
   await db.query(
     `UPDATE users
      SET password = $1,
-         "resetPasswordToken" = NULL,
-         "resetPasswordExpires" = NULL,
-         "updatedAt" = CURRENT_TIMESTAMP
+         "resetpasswordtoken" = NULL,
+         "resetpasswordexpires" = NULL,
+         "updatedat" = CURRENT_TIMESTAMP
      WHERE id = $2`,
     [hashedPassword, user.id]
   );
 };
 
 const verifyEmail = async (token) => {
-  const hashedToken = hashToken(token);
+  const hashedToken = await hashToken(token);
 
   // 1. Find user
   const result = await db.query(
     `SELECT * FROM users 
-     WHERE "verificationToken" = $1`,
+     WHERE "verificationtoken" = $1`,
     [hashedToken]
   );
 
@@ -204,9 +207,9 @@ const verifyEmail = async (token) => {
   // 2. Update user
   await db.query(
     `UPDATE users
-     SET "isVerified" = true,
-         "verificationToken" = NULL,
-         "updatedAt" = CURRENT_TIMESTAMP
+     SET "isverified" = true,
+         "verificationtoken" = NULL,
+         "updatedat" = CURRENT_TIMESTAMP
      WHERE id = $1`,
     [user.id]
   );

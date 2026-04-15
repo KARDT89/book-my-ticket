@@ -26,4 +26,24 @@ router.post(
 );
 router.post("/refresh", controller.refresh);
 
+router.get("/login", (req, res) => {
+  res.render("login");
+});
+
+router.get("/register", (req, res) => {
+  res.render("register");
+});
+
+router.get("/forgot-password", (req, res) => {
+  res.render("forgot-password");
+});
+
+router.get("/reset-password/:token", (req, res) => {
+  res.render("reset-password");
+});
+
+router.get("/verify-email-notice", (req, res) => {
+  res.render("verify-email-notice");
+});
+
 export default router;

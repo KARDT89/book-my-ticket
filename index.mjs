@@ -14,6 +14,7 @@ import cors from "cors";
 import authRouter from "./src/modules/auth/routes.js";
 import { authenticate } from "./src/modules/auth/middleware.js";
 import cookieParser from "cookie-parser";
+import pool from "./src/common/db/db.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -23,16 +24,16 @@ const port = process.env.PORT || 8080;
 // Pool is nothing but group of connections
 // If you pick one connection out of the pool and release it
 // the pooler will keep that connection open for sometime to other clients to reuse
-const pool = new pg.Pool({
-  host: "localhost",
-  port: 5431,
-  user: "postgres",
-  password: "postgres",
-  database: "book_my_ticket",
-  max: 20,
-  connectionTimeoutMillis: 0,
-  idleTimeoutMillis: 0,
-});
+// const pool = new pg.Pool({
+//   host: "localhost",
+//   port: 5431,
+//   user: "postgres",
+//   password: "postgres",
+//   database: "book_my_ticket",
+//   max: 20,
+//   connectionTimeoutMillis: 0,
+//   idleTimeoutMillis: 0,
+// });
 
 // const pool = new pg.Pool({
 //   connectionString: process.env.DATABASE_URL,
@@ -54,7 +55,12 @@ app.use(cookieParser());
 
 app.use("/api/auth", authRouter);
 
-app.get("/", authenticate, (req, res) => {
+app.get("/", (req, res, next) => {
+  authenticate(req, res, (err) => {
+    if (err) return res.redirect("/api/auth/login");
+    next();
+  });
+}, (req, res) => {
   res.sendFile(__dirname + "/index.html");
 });
 //get all seats

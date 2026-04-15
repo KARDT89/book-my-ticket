@@ -17,8 +17,8 @@ CREATE TABLE users (
 CREATE TABLE seats (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255),
-    isbooked INT DEFAULT 0
-    user_id INT REFERENCES users(id)
+    isbooked INT DEFAULT 0,
+    user_id INT REFERENCES users(id) ON DELETE SET NULL
 );
 
 INSERT INTO seats (isbooked)

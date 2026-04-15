@@ -12,5 +12,5 @@ export async function comparePassword(clearTextPassword, hash) {
 }
 
 export async function hashToken(token) {
-  crypto.createHash("sha256").update(String(token)).digest("hex");
+  return crypto.createHash("sha256").update(String(token)).digest("hex");
 }

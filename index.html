@@ -3,138 +3,463 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Stellar Seat Booking</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>ChaiCode Cinema</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
     <style>
-      @import url("https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap");
-      body {
-        font-family: "Outfit", sans-serif;
-        background-color: #0f172a;
-        color: #f8fafc;
+      :root {
+        --red: #e3000f;
+        --red-dim: #8b0009;
+        --red-glow: rgba(227, 0, 15, 0.25);
+        --black: #050505;
+        --surface: #0d0d0d;
+        --surface2: #111111;
+        --border: #1a1a1a;
+        --text: #f0e6e6;
+        --muted: #5a4a4a;
+        --mono: 'Share Tech Mono', monospace;
+        --serif: 'Noto Serif JP', serif;
       }
+
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+
+      body {
+        background: var(--black);
+        color: var(--text);
+        font-family: var(--serif);
+        min-height: 100vh;
+        padding: 40px 24px 60px;
+        position: relative;
+        overflow-x: hidden;
+      }
+
+      /* Ambient background */
+      body::before {
+        content: '';
+        position: fixed;
+        top: -200px; left: 50%;
+        transform: translateX(-50%);
+        width: 600px; height: 400px;
+        background: radial-gradient(ellipse, rgba(227,0,15,0.06) 0%, transparent 70%);
+        pointer-events: none;
+      }
+
+      .scanline {
+        position: fixed;
+        top: 0; left: 0; right: 0;
+        height: 1px;
+        background: var(--red);
+        opacity: 0.1;
+        animation: scan 10s linear infinite;
+        pointer-events: none;
+      }
+      @keyframes scan {
+        0% { top: 0; opacity: 0; }
+        5% { opacity: 0.1; }
+        95% { opacity: 0.1; }
+        100% { top: 100vh; opacity: 0; }
+      }
+
+      /* Corner seals */
+      .corner-seal {
+        position: fixed;
+        width: 60px; height: 60px;
+        border: 1px solid var(--red-dim);
+        opacity: 0.2;
+        pointer-events: none;
+      }
+      .corner-seal::before {
+        content: '';
+        position: absolute;
+        inset: 5px;
+        border: 1px solid var(--red-dim);
+      }
+      .corner-seal.tl { top: 16px; left: 16px; border-right: none; border-bottom: none; }
+      .corner-seal.tl::before { border-right: none; border-bottom: none; }
+      .corner-seal.tr { top: 16px; right: 16px; border-left: none; border-bottom: none; }
+      .corner-seal.tr::before { border-left: none; border-bottom: none; }
+      .corner-seal.bl { bottom: 16px; left: 16px; border-right: none; border-top: none; }
+      .corner-seal.bl::before { border-right: none; border-top: none; }
+      .corner-seal.br { bottom: 16px; right: 16px; border-left: none; border-top: none; }
+      .corner-seal.br::before { border-left: none; border-top: none; }
+
+      /* Header */
+      header {
+        max-width: 960px;
+        margin: 0 auto 48px;
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        padding-bottom: 24px;
+        border-bottom: 1px solid var(--border);
+        animation: fadeUp 0.6s ease forwards;
+      }
+
+      @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(12px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      .header-left {}
+
+      .cinema-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 12px;
+      }
+
+      .red-seal {
+        width: 36px; height: 36px;
+        background: var(--red);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        position: relative;
+        flex-shrink: 0;
+      }
+      .red-seal::after {
+        content: '';
+        position: absolute;
+        inset: -3px;
+        border: 1px solid var(--red);
+        opacity: 0.3;
+      }
+
+      .cinema-name {
+        font-family: var(--mono);
+        font-size: 0.7rem;
+        color: var(--red);
+        letter-spacing: 0.25em;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        font-size: 2rem;
+        font-weight: 900;
+        line-height: 1.1;
+        letter-spacing: -0.01em;
+      }
+
+      h1 .movie-title {
+        color: var(--red);
+        display: block;
+      }
+
+      .sub {
+        margin-top: 8px;
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        color: var(--muted);
+        letter-spacing: 0.1em;
+      }
+
+      /* Logout button */
+      .btn-logout {
+        background: transparent;
+        border: 1px solid #220a0a;
+        color: var(--muted);
+        font-family: var(--mono);
+        font-size: 0.7rem;
+        letter-spacing: 0.15em;
+        padding: 8px 16px;
+        cursor: pointer;
+        transition: border-color 0.2s, color 0.2s;
+        text-transform: uppercase;
+      }
+      .btn-logout:hover {
+        border-color: var(--red-dim);
+        color: var(--red);
+      }
+
+      /* Legend */
+      .legend {
+        max-width: 960px;
+        margin: 0 auto 32px;
+        display: flex;
+        align-items: center;
+        gap: 24px;
+        animation: fadeUp 0.6s 0.1s ease both;
+      }
+
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-family: var(--mono);
+        font-size: 0.7rem;
+        color: var(--muted);
+        letter-spacing: 0.1em;
+      }
+
+      .dot {
+        width: 12px; height: 12px;
+        border-radius: 50%;
+      }
+      .dot.available { background: var(--red); box-shadow: 0 0 8px var(--red-glow); }
+      .dot.booked { background: transparent; border: 1px solid #330a0a; }
+
+      .legend-sep { width: 1px; height: 16px; background: var(--border); }
+
+      /* Seat grid */
+      .grid-wrapper {
+        max-width: 960px;
+        margin: 0 auto;
+        background: var(--surface);
+        border: 1px solid #1a0808;
+        padding: 40px;
+        position: relative;
+        animation: fadeUp 0.6s 0.2s ease both;
+      }
+
+      .grid-wrapper::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, var(--red), transparent);
+      }
+
+      /* Screen indicator */
+      .screen {
+        text-align: center;
+        margin-bottom: 36px;
+        position: relative;
+      }
+      .screen::before {
+        content: '';
+        display: block;
+        height: 3px;
+        background: linear-gradient(90deg, transparent, #330808, var(--red-dim), #330808, transparent);
+        margin-bottom: 10px;
+        box-shadow: 0 0 20px rgba(227,0,15,0.2);
+      }
+      .screen-label {
+        font-family: var(--mono);
+        font-size: 0.65rem;
+        color: var(--muted);
+        letter-spacing: 0.4em;
+        text-transform: uppercase;
+      }
+
+      #tbl {
+        border-separate: separate;
+        border-spacing: 10px;
+        margin: 0 auto;
+      }
+
+      /* Toast */
+      .toast {
+        position: fixed;
+        bottom: 32px;
+        left: 50%;
+        transform: translateX(-50%) translateY(80px);
+        background: var(--surface);
+        border: 1px solid var(--red-dim);
+        border-left: 3px solid var(--red);
+        padding: 12px 24px;
+        font-family: var(--mono);
+        font-size: 0.8rem;
+        color: var(--text);
+        letter-spacing: 0.05em;
+        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        z-index: 100;
+        white-space: nowrap;
+      }
+      .toast.show { transform: translateX(-50%) translateY(0); }
+      .toast.success { border-left-color: #00b400; border-color: #0a3a0a; }
     </style>
   </head>
-  <body
-    class="min-h-screen flex items-center justify-center p-6 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900"
-  >
-    <div
-      class="max-w-7xl w-full bg-slate-800/80 backdrop-blur-xl rounded-3xl shadow-2xl p-10 border border-slate-700/50"
-    >
-      <div class="text-center mb-10">
-        <h1
-          class="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400 mb-4 tracking-tight"
-        >
-          ChaiCode Cinema - Now Showing<br />
-          <br />
-          <span class="text-red-400">
-            <span class="font-bold">Dhurandhar The Revenge</span>
-          </span>
+  <body>
+    <div class="scanline"></div>
+    <div class="corner-seal tl"></div>
+    <div class="corner-seal tr"></div>
+    <div class="corner-seal bl"></div>
+    <div class="corner-seal br"></div>
+
+    <header>
+      <div class="header-left">
+        <div class="cinema-badge">
+          <div class="red-seal">映</div>
+          <span class="cinema-name">ChaiCode Cinema</span>
+        </div>
+        <h1>
+          Now Showing
+          <span class="movie-title">Dhurandhar: The Revenge</span>
         </h1>
-        <p class="text-slate-400 text-lg">Jassi ko ghar ki yaad kyu nhi aai?</p>
+        <p class="sub">Jassi ko ghar ki yaad kyu nhi aai? </p>
       </div>
+      <button class="btn-logout" onclick="handleLogout()">Logout</button>
+    </header>
 
-      <div class="flex justify-center mb-10">
-        <div
-          class="bg-slate-900/50 rounded-full px-6 py-3 border border-slate-700 flex gap-8 items-center"
-        >
-          <div class="flex items-center gap-3">
-            <div
-              class="w-4 h-4 rounded-full bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.6)]"
-            ></div>
-            <span class="text-slate-300 font-medium tracking-wide"
-              >Available</span
-            >
-          </div>
-          <div class="w-px h-6 bg-slate-700"></div>
-          <div class="flex items-center gap-3">
-            <div
-              class="w-4 h-4 rounded-full bg-rose-500/20 border border-rose-500/50"
-            ></div>
-            <span class="text-slate-400 font-medium tracking-wide">Booked</span>
-          </div>
-        </div>
+    <div class="legend">
+      <div class="legend-item">
+        <div class="dot available"></div>
+        <span>Available</span>
       </div>
-
-      <div class="flex justify-center">
-        <div
-          class="bg-slate-900/40 p-8 rounded-2xl border border-slate-700/50 shadow-inner"
-        >
-          <table
-            id="tbl"
-            class="border-separate border-spacing-4 mx-auto"
-          ></table>
-        </div>
+      <div class="legend-sep"></div>
+      <div class="legend-item">
+        <div class="dot booked"></div>
+        <span>Booked</span>
       </div>
     </div>
 
+    <div class="grid-wrapper">
+      <div class="screen">
+        <div></div>
+        <span class="screen-label">Screen</span>
+      </div>
+      <table id="tbl"></table>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <style>
+      /* Seat styles */
+      .seat {
+        width: 80px;
+        height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: var(--mono);
+        font-size: 1rem;
+        font-weight: 700;
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        position: relative;
+        cursor: pointer;
+        user-select: none;
+      }
+
+      .seat.available {
+        background: #0d0000;
+        border: 1px solid var(--red-dim);
+        color: var(--red);
+        box-shadow: inset 0 0 20px rgba(227,0,15,0.05);
+      }
+      .seat.available:hover {
+        background: var(--red);
+        color: #fff;
+        border-color: var(--red);
+        box-shadow: 0 0 24px var(--red-glow), inset 0 0 20px rgba(255,255,255,0.05);
+        transform: translateY(-3px) scale(1.05);
+        z-index: 2;
+      }
+      .seat.available:active {
+        transform: scale(0.97);
+      }
+
+      .seat.booked {
+        background: #080808;
+        border: 1px solid #180808;
+        color: #2a1010;
+        cursor: not-allowed;
+      }
+
+      /* Tooltip */
+      .seat .tooltip {
+        position: absolute;
+        bottom: calc(100% + 10px);
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--surface);
+        border: 1px solid #220a0a;
+        padding: 6px 12px;
+        font-size: 0.65rem;
+        color: var(--text);
+        white-space: nowrap;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s;
+        z-index: 10;
+        letter-spacing: 0.05em;
+      }
+      .seat.booked:hover .tooltip { opacity: 1; }
+    </style>
+
     <script>
+      function showToast(msg, type = 'error') {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.className = `toast ${type} show`;
+        setTimeout(() => t.classList.remove('show'), 3000);
+      }
+
+      async function handleLogout() {
+        await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+        window.location.href = '/api/auth/login';
+      }
+
       async function run() {
-        const tbl = document.getElementById("tbl");
-        const res = await fetch("/seats");
-        const resarray = await res.json();
-        const j = resarray.sort((a, b) => a.id - b.id);
+        const tbl = document.getElementById('tbl');
+        const res = await fetch('/seats', { credentials: 'include' });
+
+        if (res.status === 401) {
+          window.location.href = '/api/auth/login';
+          return;
+        }
+
+        const seats = await res.json();
+        const sorted = seats.sort((a, b) => a.id - b.id);
+
         let tr;
-        for (let i = 0; i < j.length; i++) {
-          if (i % 8 === 0) tr = document.createElement("tr");
-
-          const td = document.createElement("td");
-
-          // Base aesthetic classes - added 'relative group' for tooltip positioning
-          const baseClasses =
-            "w-32 h-32 rounded-2xl text-center align-middle text-2xl font-bold transition-all duration-300 select-none relative group";
-
-          if (j[i].isbooked) {
-            td.className = `${baseClasses} bg-rose-500/10 text-rose-500/60 border border-rose-500/20 cursor-not-allowed`;
-            td.innerHTML = `
-                    <span class="relative z-10">${j[i].id}</span>
-                    <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 px-4 py-2 bg-slate-900 border border-slate-700 text-sm text-slate-300 rounded-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 whitespace-nowrap shadow-2xl z-50 pointer-events-none font-normal shadow-[0_10px_25px_rgba(0,0,0,0.5)]">
-                        Booked by: <span class="font-bold text-white ml-1">${j[i].name}</span>
-                        <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-[1px] border-[6px] border-transparent border-t-slate-700"></div>
-                        <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-[2px] border-[5px] border-transparent border-t-slate-900"></div>
-                    </div>
-                `;
-          } else {
-            td.className = `${baseClasses} bg-emerald-500 text-white border-2 border-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.3)] cursor-pointer hover:bg-emerald-400 hover:-translate-y-1.5 hover:shadow-[0_10px_25px_rgba(16,185,129,0.5)] active:scale-95 active:shadow-[0_0_10px_rgba(16,185,129,0.3)]`;
-            td.innerHTML = `<span class="relative z-10">${j[i].id}</span>`;
+        for (let i = 0; i < sorted.length; i++) {
+          if (i % 8 === 0) {
+            tr = document.createElement('tr');
+            tbl.appendChild(tr);
           }
 
-          td.addEventListener("click", async function (e) {
-            const currentTd = e.currentTarget;
-            if (currentTd.classList.contains("cursor-not-allowed")) {
-              return; // Seat is already taken
-            }
+          const td = document.createElement('td');
+          const seat = sorted[i];
 
-            try {
-              const id = j[i].id; // Safe from loop closure
-              const name = prompt("Enter your name");
+          const div = document.createElement('div');
+          div.className = `seat ${seat.isbooked ? 'booked' : 'available'}`;
+          div.textContent = seat.id;
+
+          if (seat.isbooked && seat.name) {
+            const tooltip = document.createElement('div');
+            tooltip.className = 'tooltip';
+            tooltip.textContent = `予約: ${seat.name}`;
+            div.appendChild(tooltip);
+          }
+
+          if (!seat.isbooked) {
+            div.addEventListener('click', async () => {
+              const name = prompt('Enter your name to book seat ' + seat.id);
               if (!name) return;
 
-              const res = await fetch(`/${id}/${name}`, { method: "PUT" });
-              const data = await res.json();
+              try {
+                const r = await fetch(`/${seat.id}/${encodeURIComponent(name)}`, {
+                  method: 'PUT',
+                  credentials: 'include'
+                });
+                const data = await r.json();
 
-              if (data.error) {
-                alert("FAILED! Couldn't book! already booked.");
-              } else {
-                alert("Booked successfully!");
-                // Visually transition to booked state upon success
-                currentTd.className = `${baseClasses} bg-rose-500/10 text-rose-500/60 border border-rose-500/20 cursor-not-allowed`;
-                currentTd.innerHTML = `
-                            <span class="relative z-10">${id}</span>
-                            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 px-4 py-2 bg-slate-900 border border-slate-700 text-sm text-slate-300 rounded-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 whitespace-nowrap shadow-2xl z-50 pointer-events-none font-normal shadow-[0_10px_25px_rgba(0,0,0,0.5)]">
-                                Booked by: <span class="font-bold text-white ml-1">${name}</span>
-                                <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-[1px] border-[6px] border-transparent border-t-slate-700"></div>
-                                <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-[2px] border-[5px] border-transparent border-t-slate-900"></div>
-                            </div>
-                        `;
+                if (data.error) {
+                  showToast('× Seat already booked', 'error');
+                } else {
+                  showToast('✓ Seat ' + seat.id + ' booked', 'success');
+                  div.className = 'seat booked';
+                  div.textContent = seat.id;
+
+                  const tooltip = document.createElement('div');
+                  tooltip.className = 'tooltip';
+                  tooltip.textContent = `予約: ${name}`;
+                  div.appendChild(tooltip);
+                }
+              } catch (err) {
+                showToast('× Network error', 'error');
               }
-            } catch (ex) {
-              alert("error booking " + ex);
-            }
-          });
+            });
+          }
+
+          td.appendChild(div);
           tr.appendChild(td);
-          tbl.appendChild(tr);
         }
       }
+
       run();
     </script>
   </body>
