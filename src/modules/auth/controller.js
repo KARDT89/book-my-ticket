@@ -47,7 +47,7 @@ const resetPassword = async (req, res) => {
   ApiResponse.ok(res, "Password reset successful", user);
 };
 
-export const refresh = async (req, res, next) => {
+const refresh = async (req, res, next) => {
   try {
     // token can come from cookies OR body (your choice)
     const token = req.cookies?.refreshToken || req.body.refreshToken;
