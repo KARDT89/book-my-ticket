@@ -33,9 +33,10 @@ const register = async ({ name, email, password }) => {
   const hashedPassword = await hashPassword(password);
 
   // 4. insert user + RETURNING
+  // Email verification is implimented but turned off due to submission purpose
   const result = await db.query(
-    `INSERT INTO users(name, email, password, verificationtoken)
-         VALUES($1, $2, $3, $4)
+    `INSERT INTO users(name, email, password, verificationtoken, isverified)
+         VALUES($1, $2, $3, $4, true)
          RETURNING id, name, email, createdat`,
     [name, email, hashedPassword, hashedToken]
   );
@@ -43,11 +44,14 @@ const register = async ({ name, email, password }) => {
   const user = result.rows[0];
 
   // 5. send an email to user with token: rawToken
-  try {
-    await sendVerificationEmail(email, rawToken);
-  } catch (err) {
-    console.error("Error sending verification email", err);
-  }
+
+  // uncomment this code to activate email verification
+
+  // try {
+  //   await sendVerificationEmail(email, rawToken);
+  // } catch (err) {
+  //   console.error("Error sending verification email", err);
+  // }
 
   // 6. return safe data + raw token (email verification can be implimented further)
   return {
@@ -239,7 +243,7 @@ const refresh = async (token) => {
   // 3. Compare hashed refresh token
   const hashedToken = hashToken(token);
 
-  if (user.refreshToken !== hashedToken) {
+  if (user.refreshtoken !== hashedToken) {
     throw ApiError.unauthorized("Invalid refresh token");
   }
 
