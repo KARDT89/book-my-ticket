@@ -6,7 +6,10 @@
     <title>ChaiCode Cinema</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&family=Share+Tech+Mono&display=swap"
+      rel="stylesheet"
+    />
     <style>
       :root {
         --red: #e3000f;
@@ -18,11 +21,15 @@
         --border: #1a1a1a;
         --text: #f0e6e6;
         --muted: #5a4a4a;
-        --mono: 'Share Tech Mono', monospace;
-        --serif: 'Noto Serif JP', serif;
+        --mono: "Share Tech Mono", monospace;
+        --serif: "Noto Serif JP", serif;
       }
 
-      * { margin: 0; padding: 0; box-sizing: border-box; }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
       body {
         background: var(--black);
@@ -36,18 +43,26 @@
 
       /* Ambient background */
       body::before {
-        content: '';
+        content: "";
         position: fixed;
-        top: -200px; left: 50%;
+        top: -200px;
+        left: 50%;
         transform: translateX(-50%);
-        width: 600px; height: 400px;
-        background: radial-gradient(ellipse, rgba(227,0,15,0.06) 0%, transparent 70%);
+        width: 600px;
+        height: 400px;
+        background: radial-gradient(
+          ellipse,
+          rgba(227, 0, 15, 0.06) 0%,
+          transparent 70%
+        );
         pointer-events: none;
       }
 
       .scanline {
         position: fixed;
-        top: 0; left: 0; right: 0;
+        top: 0;
+        left: 0;
+        right: 0;
         height: 1px;
         background: var(--red);
         opacity: 0.1;
@@ -55,34 +70,77 @@
         pointer-events: none;
       }
       @keyframes scan {
-        0% { top: 0; opacity: 0; }
-        5% { opacity: 0.1; }
-        95% { opacity: 0.1; }
-        100% { top: 100vh; opacity: 0; }
+        0% {
+          top: 0;
+          opacity: 0;
+        }
+        5% {
+          opacity: 0.1;
+        }
+        95% {
+          opacity: 0.1;
+        }
+        100% {
+          top: 100vh;
+          opacity: 0;
+        }
       }
 
       /* Corner seals */
       .corner-seal {
         position: fixed;
-        width: 60px; height: 60px;
+        width: 60px;
+        height: 60px;
         border: 1px solid var(--red-dim);
         opacity: 0.2;
         pointer-events: none;
       }
       .corner-seal::before {
-        content: '';
+        content: "";
         position: absolute;
         inset: 5px;
         border: 1px solid var(--red-dim);
       }
-      .corner-seal.tl { top: 16px; left: 16px; border-right: none; border-bottom: none; }
-      .corner-seal.tl::before { border-right: none; border-bottom: none; }
-      .corner-seal.tr { top: 16px; right: 16px; border-left: none; border-bottom: none; }
-      .corner-seal.tr::before { border-left: none; border-bottom: none; }
-      .corner-seal.bl { bottom: 16px; left: 16px; border-right: none; border-top: none; }
-      .corner-seal.bl::before { border-right: none; border-top: none; }
-      .corner-seal.br { bottom: 16px; right: 16px; border-left: none; border-top: none; }
-      .corner-seal.br::before { border-left: none; border-top: none; }
+      .corner-seal.tl {
+        top: 16px;
+        left: 16px;
+        border-right: none;
+        border-bottom: none;
+      }
+      .corner-seal.tl::before {
+        border-right: none;
+        border-bottom: none;
+      }
+      .corner-seal.tr {
+        top: 16px;
+        right: 16px;
+        border-left: none;
+        border-bottom: none;
+      }
+      .corner-seal.tr::before {
+        border-left: none;
+        border-bottom: none;
+      }
+      .corner-seal.bl {
+        bottom: 16px;
+        left: 16px;
+        border-right: none;
+        border-top: none;
+      }
+      .corner-seal.bl::before {
+        border-right: none;
+        border-top: none;
+      }
+      .corner-seal.br {
+        bottom: 16px;
+        right: 16px;
+        border-left: none;
+        border-top: none;
+      }
+      .corner-seal.br::before {
+        border-left: none;
+        border-top: none;
+      }
 
       /* Header */
       header {
@@ -97,11 +155,15 @@
       }
 
       @keyframes fadeUp {
-        from { opacity: 0; transform: translateY(12px); }
-        to { opacity: 1; transform: translateY(0); }
+        from {
+          opacity: 0;
+          transform: translateY(12px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
       }
-
-     
 
       .cinema-badge {
         display: inline-flex;
@@ -111,7 +173,8 @@
       }
 
       .red-seal {
-        width: 36px; height: 36px;
+        width: 36px;
+        height: 36px;
         background: var(--red);
         display: flex;
         align-items: center;
@@ -121,7 +184,7 @@
         flex-shrink: 0;
       }
       .red-seal::after {
-        content: '';
+        content: "";
         position: absolute;
         inset: -3px;
         border: 1px solid var(--red);
@@ -166,7 +229,9 @@
         letter-spacing: 0.15em;
         padding: 8px 16px;
         cursor: pointer;
-        transition: border-color 0.2s, color 0.2s;
+        transition:
+          border-color 0.2s,
+          color 0.2s;
         text-transform: uppercase;
       }
       .btn-logout:hover {
@@ -195,13 +260,24 @@
       }
 
       .dot {
-        width: 12px; height: 12px;
+        width: 12px;
+        height: 12px;
         border-radius: 50%;
       }
-      .dot.available { background: var(--red); box-shadow: 0 0 8px var(--red-glow); }
-      .dot.booked { background: transparent; border: 1px solid #330a0a; }
+      .dot.available {
+        background: var(--red);
+        box-shadow: 0 0 8px var(--red-glow);
+      }
+      .dot.booked {
+        background: transparent;
+        border: 1px solid #330a0a;
+      }
 
-      .legend-sep { width: 1px; height: 16px; background: var(--border); }
+      .legend-sep {
+        width: 1px;
+        height: 16px;
+        background: var(--border);
+      }
 
       /* Seat grid */
       .grid-wrapper {
@@ -215,11 +291,18 @@
       }
 
       .grid-wrapper::before {
-        content: '';
+        content: "";
         position: absolute;
-        top: 0; left: 0; right: 0;
+        top: 0;
+        left: 0;
+        right: 0;
         height: 2px;
-        background: linear-gradient(90deg, transparent, var(--red), transparent);
+        background: linear-gradient(
+          90deg,
+          transparent,
+          var(--red),
+          transparent
+        );
       }
 
       /* Screen indicator */
@@ -229,12 +312,19 @@
         position: relative;
       }
       .screen::before {
-        content: '';
+        content: "";
         display: block;
         height: 3px;
-        background: linear-gradient(90deg, transparent, #330808, var(--red-dim), #330808, transparent);
+        background: linear-gradient(
+          90deg,
+          transparent,
+          #330808,
+          var(--red-dim),
+          #330808,
+          transparent
+        );
         margin-bottom: 10px;
-        box-shadow: 0 0 20px rgba(227,0,15,0.2);
+        box-shadow: 0 0 20px rgba(227, 0, 15, 0.2);
       }
       .screen-label {
         font-family: var(--mono);
@@ -267,8 +357,13 @@
         z-index: 100;
         white-space: nowrap;
       }
-      .toast.show { transform: translateX(-50%) translateY(0); }
-      .toast.success { border-left-color: #00b400; border-color: #0a3a0a; }
+      .toast.show {
+        transform: translateX(-50%) translateY(0);
+      }
+      .toast.success {
+        border-left-color: #00b400;
+        border-color: #0a3a0a;
+      }
     </style>
   </head>
   <body>
@@ -288,7 +383,7 @@
           Now Showing
           <span class="movie-title">Dhurandhar: The Revenge</span>
         </h1>
-        <p class="sub">Jassi ko ghar ki yaad kyu nhi aai? </p>
+        <p class="sub">Jassi ko ghar ki yaad kyu nhi aai?</p>
       </div>
       <button class="btn-logout" onclick="handleLogout()">Logout</button>
     </header>
@@ -336,13 +431,15 @@
         background: #0d0000;
         border: 1px solid var(--red-dim);
         color: var(--red);
-        box-shadow: inset 0 0 20px rgba(227,0,15,0.05);
+        box-shadow: inset 0 0 20px rgba(227, 0, 15, 0.05);
       }
       .seat.available:hover {
         background: var(--red);
         color: #fff;
         border-color: var(--red);
-        box-shadow: 0 0 24px var(--red-glow), inset 0 0 20px rgba(255,255,255,0.05);
+        box-shadow:
+          0 0 24px var(--red-glow),
+          inset 0 0 20px rgba(255, 255, 255, 0.05);
         transform: translateY(-3px) scale(1.05);
         z-index: 2;
       }
@@ -375,28 +472,33 @@
         z-index: 10;
         letter-spacing: 0.05em;
       }
-      .seat.booked:hover .tooltip { opacity: 1; }
+      .seat.booked:hover .tooltip {
+        opacity: 1;
+      }
     </style>
 
     <script>
-      function showToast(msg, type = 'error') {
-        const t = document.getElementById('toast');
+      function showToast(msg, type = "error") {
+        const t = document.getElementById("toast");
         t.textContent = msg;
         t.className = `toast ${type} show`;
-        setTimeout(() => t.classList.remove('show'), 3000);
+        setTimeout(() => t.classList.remove("show"), 3000);
       }
 
       async function handleLogout() {
-        await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
-        window.location.href = '/api/auth/login';
+        await fetch("/api/auth/logout", {
+          method: "POST",
+          credentials: "include",
+        });
+        window.location.href = "/api/auth/login";
       }
 
       async function run() {
-        const tbl = document.getElementById('tbl');
-        const res = await fetch('/seats', { credentials: 'include' });
+        const tbl = document.getElementById("tbl");
+        const res = await fetch("/seats", { credentials: "include" });
 
         if (res.status === 401) {
-          window.location.href = '/api/auth/login';
+          window.location.href = "/api/auth/login";
           return;
         }
 
@@ -406,50 +508,53 @@
         let tr;
         for (let i = 0; i < sorted.length; i++) {
           if (i % 8 === 0) {
-            tr = document.createElement('tr');
+            tr = document.createElement("tr");
             tbl.appendChild(tr);
           }
 
-          const td = document.createElement('td');
+          const td = document.createElement("td");
           const seat = sorted[i];
 
-          const div = document.createElement('div');
-          div.className = `seat ${seat.isbooked ? 'booked' : 'available'}`;
+          const div = document.createElement("div");
+          div.className = `seat ${seat.isbooked ? "booked" : "available"}`;
           div.textContent = seat.id;
 
           if (seat.isbooked && seat.name) {
-            const tooltip = document.createElement('div');
-            tooltip.className = 'tooltip';
+            const tooltip = document.createElement("div");
+            tooltip.className = "tooltip";
             tooltip.textContent = `予約: ${seat.name}`;
             div.appendChild(tooltip);
           }
 
           if (!seat.isbooked) {
-            div.addEventListener('click', async () => {
-              const name = prompt('Enter your name to book seat ' + seat.id);
+            div.addEventListener("click", async () => {
+              const name = prompt("Enter your name to book seat " + seat.id);
               if (!name) return;
 
               try {
-                const r = await fetch(`/${seat.id}/${encodeURIComponent(name)}`, {
-                  method: 'PUT',
-                  credentials: 'include'
-                });
+                const r = await fetch(
+                  `/${seat.id}/${encodeURIComponent(name)}`,
+                  {
+                    method: "PUT",
+                    credentials: "include",
+                  }
+                );
                 const data = await r.json();
 
                 if (data.error) {
-                  showToast('× Seat already booked', 'error');
+                  showToast("× Seat already booked", "error");
                 } else {
-                  showToast('✓ Seat ' + seat.id + ' booked', 'success');
-                  div.className = 'seat booked';
+                  showToast("✓ Seat " + seat.id + " booked", "success");
+                  div.className = "seat booked";
                   div.textContent = seat.id;
 
-                  const tooltip = document.createElement('div');
-                  tooltip.className = 'tooltip';
+                  const tooltip = document.createElement("div");
+                  tooltip.className = "tooltip";
                   tooltip.textContent = `予約: ${name}`;
                   div.appendChild(tooltip);
                 }
               } catch (err) {
-                showToast('× Network error', 'error');
+                showToast("× Network error", "error");
               }
             });
           }

@@ -1,5 +1,5 @@
 import pg from "pg";
-import 'dotenv/config'
+import "dotenv/config";
 
 // const pool = new pg.Pool({
 //   host: "localhost",

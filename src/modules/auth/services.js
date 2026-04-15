@@ -67,8 +67,8 @@ const login = async ({ email, password }) => {
   const user = result.rows[0];
   // console.log(user);
   console.log(user);
-  
-  if(!user.isverified) throw ApiError.forbidden("Email not verified")
+
+  if (!user.isverified) throw ApiError.forbidden("Email not verified");
 
   // 2. check password
   const isMatch = await comparePassword(password, user.password);
