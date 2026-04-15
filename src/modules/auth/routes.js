@@ -26,6 +26,8 @@ router.post(
 );
 router.post("/refresh", controller.refresh);
 
+
+// Frontend features
 router.get("/login", (req, res) => {
   res.render("login");
 });
