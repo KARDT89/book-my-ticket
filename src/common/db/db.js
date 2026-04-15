@@ -11,4 +11,12 @@ const pool = new pg.Pool({
   idleTimeoutMillis: 0,
 });
 
+// const pool = new pg.Pool({
+//   connectionString: process.env.DATABASE_URL,
+//   ssl: { rejectUnauthorized: false },
+//   max: 5,
+//   connectionTimeoutMillis: 0,
+//   idleTimeoutMillis: 0,
+// });
+
 export default pool;
