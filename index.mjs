@@ -69,6 +69,8 @@ app.put("/:id/:name", authenticate, async (req, res) => {
   try {
     const id = req.params.id;
     const name = req.params.name;
+    const user = req.user
+   
     // payment integration should be here
     // verify payment
     const conn = await pool.connect(); // pick a connection from the pool
@@ -90,8 +92,8 @@ app.put("/:id/:name", authenticate, async (req, res) => {
       return;
     }
     //if we get the row, we are safe to update
-    const sqlU = "update seats set isbooked = 1, name = $2 where id = $1";
-    const updateResult = await conn.query(sqlU, [id, name]); // Again to avoid SQL INJECTION we are using $1 and $2 as placeholders
+    const sqlU = "update seats set isbooked = 1, name = $2, user_id = $3 where id = $1";
+    const updateResult = await conn.query(sqlU, [id, name, user.id]); // Again to avoid SQL INJECTION we are using $1 and $2 as placeholders
 
     //end transaction by committing
     await conn.query("COMMIT");

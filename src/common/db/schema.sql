@@ -1,13 +1,4 @@
-CREATE TABLE seats (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(255),
-    isbooked INT DEFAULT 0
-);
-
-INSERT INTO seats (isbooked)
-SELECT 0 FROM generate_series(1, 20);
-
-CREATE TABLE USERS (
+CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     name varchar(50),
     email VARCHAR(322) UNIQUE NOT NULL,
@@ -22,3 +13,14 @@ CREATE TABLE USERS (
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE seats (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255),
+    isbooked INT DEFAULT 0
+    user_id INT REFERENCES users(id)
+);
+
+INSERT INTO seats (isbooked)
+SELECT 0 FROM generate_series(1, 20);
+
