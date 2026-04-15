@@ -79,7 +79,7 @@ const login = async ({ email, password }) => {
 
   // 4. store refresh token in DB
   await db.query("UPDATE users SET refreshToken = $1 WHERE id = $2", [
-    refreshToken,
+    hashToken(refreshToken),
     user.id,
   ]);
 
